@@ -1,11 +1,26 @@
 const express = require('express');
 const app = express();
 PORT = 3001;
-app.use(express.json())
 const {createTodo, updateTodo} = require('./types');
 const { todo } = require('./db');
+const cors =  require('cors');
+const bodyParser = require('body-parser');
+
+app.use(express.json());
+app.use(bodyParser.json())
+
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
+
+app.use((req, res, next) => {
+    console.log(`Received ${req.method} request for ${req.url}`);
+    console.log('Request body:', req.body);
+    next();
+});
 
 app.post('/todo',async (req,res)=>{
+    // console.log("request---------------------------",req);
     const pasredCreateTodo = createTodo.safeParse(req.body);
     if(!pasredCreateTodo.success){
         return res.status(411).json({
